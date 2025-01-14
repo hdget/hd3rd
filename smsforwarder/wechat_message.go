@@ -39,15 +39,17 @@ func NewWechatMessage(data []byte, secret string) (*WechatMessage, error) {
 
 func parseContent(s string) (*WechatMessage, error) {
 	if s == "" {
-		return nil, errors.New("empty content")
+		return nil, errors.New("empty wechat message")
 	}
 
 	tokens := strings.Split(s, "\n")
-	if len(tokens) != 6 {
-		return nil, errors.New("invalid content format")
+	tokenLength := len(tokens)
+	if tokenLength < 6 {
+		return nil, errors.New("invalid wechat message")
 	}
 
-	strTime, scene, content := tokens[4], tokens[2], regexRemoveUnused.ReplaceAllString(tokens[1], "")
+	strTime, scene, content := tokens[tokenLength-2], tokens[tokenLength-4], regexRemoveUnused.ReplaceAllString(strings.Join(tokens[1:tokenLength-4], "\n"), "")
+
 	index := strings.Index(content, ":")
 	if index == -1 {
 		return nil, fmt.Errorf("invalid message content, content: %s", content)

@@ -1,4 +1,4 @@
-module github.com/hdget/hd3rdparty
+module github.com/hdget/hd3rd
 
 go 1.23.1
 
