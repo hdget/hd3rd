@@ -45,25 +45,24 @@ func parseContent(s string) (*WechatMessage, error) {
 	tokens := strings.Split(s, "\n")
 	tokenLength := len(tokens)
 	if tokenLength < 6 {
-		return nil, errors.New("invalid wechat message")
+		return nil, fmt.Errorf("invalid wechat message, rawContent: %s", s)
 	}
 
 	strTime, scene, content := tokens[tokenLength-2], tokens[tokenLength-4], regexRemoveUnused.ReplaceAllString(strings.Join(tokens[1:tokenLength-4], "\n"), "")
 
 	index := strings.Index(content, ":")
 	if index == -1 {
-		return nil, fmt.Errorf("invalid message content, content: %s", content)
+		return nil, fmt.Errorf("invalid wechat message content, content: %s", content)
 	}
 
 	if !carbon.Parse(strTime).IsValid() {
-		return nil, fmt.Errorf("invalid message time, time: %s", strTime)
+		return nil, fmt.Errorf("invalid wechat message time, time: %s", strTime)
 	}
-
-	sender := content[:index]
 
 	// 如果消息的联系人和发送者是一样，则表示是单聊消息，否则认为是群聊消息
 	kind := WechatMessageKindOne2One
 	group := ""
+	sender := content[:index]
 	if scene != sender {
 		kind = WechatMessageKindGroup
 		group = scene
