@@ -59,10 +59,11 @@ func parseContent(s string) (*WechatMessage, error) {
 		return nil, fmt.Errorf("invalid wechat message time, time: %s", strTime)
 	}
 
+	sender := content[:index]
+
 	// 如果消息的联系人和发送者是一样，则表示是单聊消息，否则认为是群聊消息
 	kind := WechatMessageKindOne2One
 	group := ""
-	sender := content[:index]
 	if scene != sender {
 		kind = WechatMessageKindGroup
 		group = scene
